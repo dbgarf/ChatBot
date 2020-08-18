@@ -1,0 +1,86 @@
+Logixboard Take-Home Problem for Backend Engineers (Product Focus)
+
+Thanks for applying to Logixboard and for having the initial discussion with us! The next step in our interview
+process is, for those who don’t have (or choose not to share) an open-source portfolio project we can walk through,
+a brief take-home exercise designed to learn how you approach problems related to those we solve regularly here at
+Logixboard. If you’re reading this, presumably you’ve chosen the exercise, so welcome!
+In this exercise, you’ll be building an MVP of the backend portions of a chat bot that could be called from an
+IRC channel. The input and output interfaces are both plain old strings, which should allow for testing within just
+about any environment of your choosing. You are free to use any languages, libraries, persistence tooling, etc. that
+you are comfortable with - this exercise is an opportunity for you to showcase the skills and abilities you feel most
+confident with!
+
+We hope and expect that this exercise should take about four hours to complete. If it takes you a bit more than
+that, that’s okay, and you don’t need to tell us. If it takes you a lot more than that, please let us know so we can
+reevaluate the exercise entirely, if needed. If you have clarifying questions at any point, or if you for any reason
+don’t feel a “product requirement” is quite right, feel free to reach out!
+Interfaces and Environment
+
+• Input takes the form of <username>: <message>, for example, josh: hello. There will always be exactly
+one space between the username - if there are multiple spaces, N-1 of them were part of the user’s message.
+The bot will receive a copy of all messages sent to the channel, but only needs to respond to those which start
+with an exclamation point, which we call “commands” - for example josh: !timeat America/Los_Angeles
+
+• Output takes the form of <message>. If the bot would like to tag a user for any reason, they can do so in the
+form of <username>: <message>
+
+• Our MVP deployment of this bot will be in a relatively small room (~20 users talking “pub style” - bursts of
+busy conversation in the morning and evening, with lulls in the afternoon). However, we have aspirations to
+take this bot into the biggest room on Freenode if the idea proves itself worthy!
+UX Requirements
+
+• When a !timeat <tzinfo> command is received, the server should respond with the time in that timezone,
+formatted as shown in the examples in Appendix A below.
+
+Dealing with timezones ourselves is not fun, and we also want to introduce a remote/third-party dependency
+few uptime guarantees. In this spirit please use the World Time API to power this command. The address of
+the API should be overridable through the TIME_API environment variable (either to switch providers, or to
+put a proxy/shim in front to introduce further unreliability for testing purposes - expect that we will do so
+while testing your solution).
+
+• When a !timepopularity <tzinfo_or_prefix> command is received, the server should respond with the
+number of valid !timeat requests that have been received for timezones that start with <tzinfo_or_prefix>.
+A “prefix” here is defined as any characters before a / in a tzinfo string - in America/Chicago, America
+would be the prefix, while in America/Argentina/Buenos_Aires, America and America/Argentina would
+be the prefixes. Knowing this, a command of !timepopularity America would return the number of !timeat
+requests for anywhere in the Americas, and a command of timepopularity America/Argentina would return
+the number of !timeat requests for anywhere in Argentina.
+However, fully-qualified timezone names are still valid here - meaning GMT and America/Chicago should return
+values as well. The response should simply be an integer, ex. 5.
+
+• All popularity data should be preserved across restarts of the bot application; the method of doing
+so is an implementation detail left to your choosing.
+
+
+Bonus Ideas / Optional
+
+• Tests
+
+• Integration with an actual IRC server, HTTP-based chat server, etc.
+
+• Bundling this into a reusable library in the language of implementation
+
+Appendix A: Formatting timeat <tzinfo> Responses
+
+These examples assume the time, in RFC3339 format and UTC timezone, is 2020-06-09T20:55:30.380632+00:00.
+“tzinfo” refers to the TZ Database standard.
+
+• a request for !timeat America/Los_Angeles should be responded to with 9 Jun 2020 13:55
+
+• a request for !timeat America/New_York should be responded to with 9 Jun 2020 16:55
+
+• a request for !timeat Nowhere should be responded to with unknown timezone, because Nowhere is not a
+valid tzinfo entry
+
+• a request for !timeat Seattle should be responded to with unknown timezone, because Seattle is not a
+valid tzinfo entry
+
+• likewise, a request for !timeat America/Indiana should be responded to with unknown timezone, because
+while America/Indiana is a valid tzinfo prefix, it is not itself specific enough (America/Indiana is further
+broken into 8 subgroups representing 2 timezones - which is a fun read for some definitions of fun)
+
+• a request for !timeat Vancouver can be responded to with either 9 Jun 2020 13:55 (representing
+America/Vancouver), or with unknown timezone - consider a solution to this “bonus points”, and if you
+choose to solve it, be ready to chat about your implementation!
+
+• requests that fail for any other reason are free to be handled in a manner of your choosing
