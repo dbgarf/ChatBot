@@ -1,4 +1,5 @@
 appdirs==1.4.3
+astroid==2.4.2
 attrs==19.3.0
 CacheControl==0.12.6
 certifi==2019.11.28
@@ -12,7 +13,10 @@ html5lib==1.0.1
 idna==2.8
 iniconfig==1.0.1
 ipaddr==2.2.0
+isort==4.3.21
+lazy-object-proxy==1.4.3
 lockfile==0.12.2
+mccabe==0.6.1
 mirakuru==2.3.0
 more-itertools==8.4.0
 msgpack==0.6.2
@@ -23,9 +27,11 @@ port-for==0.4
 progress==1.5
 psutil==5.7.2
 py==1.9.0
+pylint==2.5.3
 pyparsing==2.4.6
 pytest==6.0.1
 pytest-redis==2.0.0
+python-dateutil==2.8.1
 pytoml==0.1.21
 pytz==2020.1
 redis==3.5.3
@@ -35,3 +41,4 @@ six==1.14.0
 toml==0.10.1
 urllib3==1.25.8
 webencodings==0.5.1
+wrapt==1.12.1

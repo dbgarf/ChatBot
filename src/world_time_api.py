@@ -1,5 +1,6 @@
 import os
 import requests 
+from datetime import datetime
 
 class WorldTimeAPI:
     DEFAULT_DOMAIN = 'http://worldtimeapi.org'
@@ -29,25 +30,30 @@ class WorldTimeAPI:
             "utc_offset":"-07:00",
             "week_number":34
         }
-        
+
+        if only the :area is given (e.g. America instead of America/Denver then a list of timezones with that area prefix are returned)
+        note: this is a 200 resposne even though it's not what we want. need to handle it.
+
+        if an invalid timezone is requested a 404 is returned 
         """
         url = "{base_domain}/api/timezone/{tz}".format(base_domain=self.base_domain, tz=tz)
         response = requests.get(url)
 
         if response.status_code == 200:
-            return self.format_datetime(response.json().get('datetime'))
+            body = response.json()
+            if isinstance(body, list):
+                return "that's not a fully formed timezone. please choose a timezone from this list:\n {timezones}".format(timezones=body)
+            elif isinstance(body, dict):
+                timestamp = body.get('datetime')
+                dt = datetime.fromisoformat(timestamp)
+                return dt.strftime('%d %b %Y %H:%M')
 
-        if response.status_code == 404:
+        elif response.status_code == 404:
             return "Could not recognize timezone: %s" % tz
 
-        if response.status_code == 500:
+        elif response.status_code == 500:
             return "Uh oh. Something's broken upstream. Try again later I guess."
 
         # fall through to this one if the server is doing something we haven't handled here
         # in a more robust environment would want to log this to a priority channel, cuz very unexpected
         return "World Time Service did something weird"
-
-        def format_datetime(self, dt):
-            "example of desired format: 9 Jun 2020 13:55"
-            # I bet there's a python util in datetime module that will do what I want
-            pass
