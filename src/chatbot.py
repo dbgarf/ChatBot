@@ -1,7 +1,19 @@
 
 import re
 
+from src.commands import timeat, timepopularity
+
+class UndefinedCommandError(Exception):
+    pass
+
 class ChatBot:
+
+    # this could be done with a Registry decorator instead but that's more complicated than needed
+    # for now stupid and simple is better, registry decorator more sensible for larger code base
+    COMMANDS = {
+        'timeat': timeat,
+        'timepopularity': timepopularity
+    }
 
     def parse_command(self, input_message):
         "parses input message into command and argument"
@@ -27,3 +39,19 @@ class ChatBot:
         return (command, argument)
 
 
+    def dispatch(self, command, argument):
+        fn = self.COMMANDS.get(command)
+        if fn:
+            return fn(argument)
+
+        raise UndefinedCommandError("Command with name: %s not found" % command)
+
+    def handle_message(self, input_message):
+        "primary public interface"
+
+        result = self.parse_command(input_message)
+        if result:
+            command, argument = result
+            return self.dispatch(command, argument)
+
+        return "Couldn't figure out what to do with input message: %s" % input_message
