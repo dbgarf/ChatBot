@@ -73,14 +73,3 @@ def mock_not_found_response(monkeypatch):
         return r
 
     monkeypatch.setattr(requests, "get", mock_get)
-
-# @pytest.fixture
-# def mock_redis(monkeypatch):
-#     from src import redis_client
-#     def get_test_redis_client():
-#         r = redis.Redis(host='localhost', port=6379, db=1)
-#         # flushall before monkeypatching so its guaranteed fresh
-#         r.flushall()
-#         return r 
-
-#     monkeypatch.setattr(redis_client, "get_redis_client", get_test_redis_client)
