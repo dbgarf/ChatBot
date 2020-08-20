@@ -1,5 +1,24 @@
 import pytest
 from src.chatbot import ChatBot
+# from src import redis_client
+
+# class MockRedis:
+#     def __init__():
+#         self.data = {}
+
+#     def get(key):
+#         return self.data.get(key)
+
+#     def set(key, val):
+#         self.data[key] = val
+
+# @pytest.fixture
+# def mock_redis(monkeypatch):
+
+#     def mock_r:
+#         return MockRedis()
+
+#     monkeypatch.setattr(redis_client, "get_redis_client", mock_r)
 
 class TestChatbot:
 
@@ -36,3 +55,6 @@ class TestChatbot:
         # missing argument
         result = chatbot.parse_command('dan: !timeat')
         assert result == False
+
+    def test_timeat_command_increments_count_on_valid_request(self, mock_redis, mock_good_response):
+        pass

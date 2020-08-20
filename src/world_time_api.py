@@ -42,18 +42,18 @@ class WorldTimeAPI:
         if response.status_code == 200:
             body = response.json()
             if isinstance(body, list):
-                return "that's not a fully formed timezone. please choose a timezone from this list:\n {timezones}".format(timezones=body)
+                return (False, "Unknown Timezone")
             elif isinstance(body, dict):
                 timestamp = body.get('datetime')
                 dt = datetime.fromisoformat(timestamp)
-                return dt.strftime('%d %b %Y %H:%M')
+                return (True, dt.strftime('%d %b %Y %H:%M'))
 
         elif response.status_code == 404:
-            return "Could not recognize timezone: %s" % tz
+            return (False, "Unknown Timezone")
 
         elif response.status_code == 500:
-            return "Uh oh. Something's broken upstream. Try again later I guess."
+            return (False, "Uh oh. Something's broken upstream. Try again later I guess.")
 
         # fall through to this one if the server is doing something we haven't handled here
         # in a more robust environment would want to log this to a priority channel, cuz very unexpected
-        return "World Time Service did something weird"
+        return (False, "World Time Service did something weird")
