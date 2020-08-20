@@ -64,11 +64,6 @@ class TestChatbot:
         result = chatbot.handle_message('dan: !timepopularity America/LosT_Angeles')
         assert int(result) == 0
 
-        # then do another invalid request and confirm it does not increments
-        chatbot.handle_message('dan: !timeat America/LosT_Angeles')
-        result = chatbot.handle_message('dan: !timepopularity America/Los_Angeles')
-        assert int(result) == 0
-
     def test_timepopularity_sums_prefix_matches(self):
         # going to directly set some keys in redis for purposes of this test, to simulate a history of previous valid requests
         r = get_redis_client()

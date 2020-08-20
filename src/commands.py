@@ -22,6 +22,9 @@ def timepopularity(tzinfo_or_prefix):
 
     r = get_redis_client()
     pattern = tzinfo_or_prefix + "*"
+    # performance note: the KEYS command in redis runs in O(n) time where n is number of keys in the database
+    # for large scale deployments this might become a performance issue, but probably not a big deal here
+    # because the maximum size of the keyspace in this use case is only 386 (number of canonical timezones in worldtimeapi.org)
     matching_keys = r.keys(pattern)
     acc = 0
     for key in matching_keys:
