@@ -2,6 +2,8 @@ import pytest
 from src import redis_client
 import requests
 
+pytest_plugins = ['pytest_server_fixtures.redis']
+
 class MockGoodResponse:
     @staticmethod
     def json():
@@ -74,20 +76,10 @@ def mock_not_found_response(monkeypatch):
 
     monkeypatch.setattr(requests, "get", mock_get)
 
-class MockRedis:
-    def __init__():
-        self.data = {}
-
-    def get(key):
-        return self.data.get(key)
-
-    def set(key, val):
-        self.data[key] = val
-
 @pytest.fixture
-def mock_redis(monkeypatch):
+def mock_redis(redis_server):
 
     def mock_r():
-        return MockRedis()
+        return redis_server.api
 
     monkeypatch.setattr(redis_client, "get_redis_client", mock_r)

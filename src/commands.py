@@ -1,12 +1,12 @@
 from src.world_time_api import WorldTimeAPI
-from src.redis_client import get_redis_client
+import redis 
 
 def timeat(timezone):
     api = WorldTimeAPI()
     result, message = api.get_time_at_timezone(timezone)
 
     if result:
-        r = get_redis_client()
+        r = redis.Redis(host='localhost', port=6379, db=0)
         count = r.get(timezone)
         if count is None:
             r.set(timezone, 1)
@@ -15,7 +15,7 @@ def timeat(timezone):
     return message
 
 def timepopularity(timezone):
-    r = get_redis_client()
+    r = redis.Redis(host='localhost', port=6379, db=0)
     count = r.get(timezone)
     if count is None:
         return 0

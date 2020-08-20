@@ -56,5 +56,12 @@ class TestChatbot:
         result = chatbot.parse_command('dan: !timeat')
         assert result == False
 
-    def test_timeat_command_increments_count_on_valid_request(self, mock_redis, mock_good_response):
-        pass
+    def test_increments_count_on_valid_request(self, mock_redis, mock_good_response):
+        chatbot = ChatBot()
+        # make a first request
+        result = chatbot.handle_message('dan: !timeat America/Los_Angeles')
+        assert result == "18 Aug 2020 21:07"
+        # then check its popularity
+        result = chatbot.handle_message('dan: !timepopularity America/Los_Angeles')
+        assert int(result) == 1
+        
