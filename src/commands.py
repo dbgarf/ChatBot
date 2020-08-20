@@ -1,22 +1,29 @@
 from src.world_time_api import WorldTimeAPI
 from src.redis_client import get_redis_client
 
-def timeat(timezone):
+def timeat(tzinfo):
     api = WorldTimeAPI()
-    result, message = api.get_time_at_timezone(timezone)
+    result, message = api.get_time_at_timezone(tzinfo)
 
     if result:
         r = get_redis_client()
-        count = r.get(timezone)
+        count = r.get(tzinfo)
         if count is None:
-            r.set(timezone, 1)
+            r.set(tzinfo, 1)
         else:
-            r.set(timezone, int(count) + 1)
+            r.set(tzinfo, int(count) + 1)
     return message
 
-def timepopularity(timezone):
+def timepopularity(tzinfo_or_prefix):
+    """
+    the argument here might be a prefix like America or America/Argentina
+    so to get the count we want to scan the redis keys and sum the matches
+    """
+
     r = get_redis_client()
-    count = r.get(timezone)
-    if count is None:
-        return 0
-    return count
+    pattern = tzinfo_or_prefix + "*"
+    matching_keys = r.keys(pattern)
+    acc = 0
+    for key in matching_keys:
+        acc += int(r.get(key))
+    return acc

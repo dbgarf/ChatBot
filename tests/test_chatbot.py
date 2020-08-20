@@ -49,4 +49,48 @@ class TestChatbot:
         # then check its popularity
         result = chatbot.handle_message('dan: !timepopularity America/Los_Angeles')
         assert int(result) == 1
-        
+
+        # then do another and confirm it increments
+        chatbot.handle_message('dan: !timeat America/Los_Angeles')
+        result = chatbot.handle_message('dan: !timepopularity America/Los_Angeles')
+        assert int(result) == 2
+
+    def test_does_not_increment_count_on_invalid_request(self, mock_invalid_timezone_response):
+        chatbot = ChatBot()
+        # make an invalid request
+        result = chatbot.handle_message('dan: !timeat America/LosT_Angeles')
+        assert result == "Unknown Timezone"
+        # then check its popularity, should be 0, we don't record invalid ones
+        result = chatbot.handle_message('dan: !timepopularity America/LosT_Angeles')
+        assert int(result) == 0
+
+        # then do another invalid request and confirm it does not increments
+        chatbot.handle_message('dan: !timeat America/LosT_Angeles')
+        result = chatbot.handle_message('dan: !timepopularity America/Los_Angeles')
+        assert int(result) == 0
+
+    def test_timepopularity_sums_prefix_matches(self):
+        # going to directly set some keys in redis for purposes of this test, to simulate a history of previous valid requests
+        r = get_redis_client()
+        r.set('America/Los_Angeles', 1)
+        r.set('America/Argentina/Buenos_Aires', 1)
+        r.set('America/Argentina/Catamarca', 2)
+        r.set('Europe/Paris', 3)
+        r.set('Europe/London', 2)
+
+        chatbot = ChatBot()
+        result = chatbot.handle_message('dan: !timepopularity America')
+        assert int(result) == 4
+
+        result = chatbot.handle_message('dan: !timepopularity America/Argentina')
+        assert int(result) == 3
+
+        result = chatbot.handle_message('dan: !timepopularity Europe')
+        assert int(result) == 5
+
+        # and for good measure lets confirm that exact matches still work, and zero matches are still 0
+        result = chatbot.handle_message('dan: !timepopularity America/Argentina/Buenos_Aires')
+        assert int(result) == 1
+
+        result = chatbot.handle_message('dan: !timepopularity Asia')
+        assert int(result) == 0
