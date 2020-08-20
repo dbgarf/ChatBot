@@ -1,8 +1,6 @@
 import pytest
-from src import redis_client
+import redis
 import requests
-
-pytest_plugins = ['pytest_server_fixtures.redis']
 
 class MockGoodResponse:
     @staticmethod
@@ -76,10 +74,13 @@ def mock_not_found_response(monkeypatch):
 
     monkeypatch.setattr(requests, "get", mock_get)
 
-@pytest.fixture
-def mock_redis(redis_server):
+# @pytest.fixture
+# def mock_redis(monkeypatch):
+#     from src import redis_client
+#     def get_test_redis_client():
+#         r = redis.Redis(host='localhost', port=6379, db=1)
+#         # flushall before monkeypatching so its guaranteed fresh
+#         r.flushall()
+#         return r 
 
-    def mock_r():
-        return redis_server.api
-
-    monkeypatch.setattr(redis_client, "get_redis_client", mock_r)
+#     monkeypatch.setattr(redis_client, "get_redis_client", get_test_redis_client)

@@ -1,26 +1,11 @@
 import pytest
 from src.chatbot import ChatBot
-# from src import redis_client
-
-# class MockRedis:
-#     def __init__():
-#         self.data = {}
-
-#     def get(key):
-#         return self.data.get(key)
-
-#     def set(key, val):
-#         self.data[key] = val
-
-# @pytest.fixture
-# def mock_redis(monkeypatch):
-
-#     def mock_r:
-#         return MockRedis()
-
-#     monkeypatch.setattr(redis_client, "get_redis_client", mock_r)
+from src.redis_client import get_redis_client
 
 class TestChatbot:
+    def setup(self):
+        r = get_redis_client()
+        r.flushall()
 
     def test_parse_command_good_input(self):
         chatbot = ChatBot()
@@ -56,7 +41,7 @@ class TestChatbot:
         result = chatbot.parse_command('dan: !timeat')
         assert result == False
 
-    def test_increments_count_on_valid_request(self, mock_redis, mock_good_response):
+    def test_increments_count_on_valid_request(self, mock_good_response):
         chatbot = ChatBot()
         # make a first request
         result = chatbot.handle_message('dan: !timeat America/Los_Angeles')
