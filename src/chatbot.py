@@ -26,7 +26,7 @@ class ChatBot:
         else:
             return False
         
-        message_pattern = r'^!(?P<command>\w+) (?P<argument>.+)$' # deliberately unspecific pattern, will check validity elsewhere
+        message_pattern = r'^!(?P<command>\w+) (?P<argument>.+)$'
         if message:
             message_matches = re.match(message_pattern, message)
 
@@ -38,6 +38,8 @@ class ChatBot:
 
         return (command, argument)
 
+    def available_commands(self):
+        return ["!%s" % k for k in self.COMMANDS.keys()]
 
     def dispatch(self, command, argument):
         fn = self.COMMANDS.get(command)

@@ -1,5 +1,5 @@
 import pytest
-from src.chatbot import ChatBot
+from src.chatbot import ChatBot, UndefinedCommandError
 from src.redis_client import get_redis_client
 
 class TestChatbot:
@@ -40,6 +40,11 @@ class TestChatbot:
         # missing argument
         result = chatbot.parse_command('dan: !timeat')
         assert result == False
+
+    def test_undefined_command_raises_error(self):
+        chatbot = ChatBot()
+        with pytest.raises(UndefinedCommandError):
+            chatbot.handle_message('dan: !timewarp 1985') # flux capacitor not included
 
     def test_increments_count_on_valid_request(self, mock_good_response):
         chatbot = ChatBot()

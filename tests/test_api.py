@@ -54,3 +54,9 @@ class TestChatBotAPI:
         response = client.get(url)
         assert response.status_code == 200
         assert response.json() == 2
+    
+    def test_undefined_command(self):
+        url = "/?message=dan: !timewarp 1985"
+        response = client.get(url)
+        assert response.status_code == 200
+        assert response.json() == "undefined command. available commands: ['!timeat', '!timepopularity']"

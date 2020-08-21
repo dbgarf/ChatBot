@@ -1,5 +1,3 @@
-homework assignment for LogixBoard interview
-
 ### scripted installation
 
 1. clone the repo into the directory of your choice, this is the project directory
